@@ -1,0 +1,19 @@
+name: Uni Notice Board CD
+
+on:
+  workflow_run:
+    workflows: ["Uni Notice Board CI"]
+    types:
+      - completed
+
+jobs:
+  deploy_job:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          echo "Triggering Render deployment..."
+          curl -X POST "${{ secrets.RENDER_CALLBACK_URL }}"
